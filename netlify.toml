@@ -1,6 +1,0 @@
-[build]
-  command = "yarn install && yarn build"
-  publish = "out"
-
-[template.environment]
-  NEXT_PUBLIC_LIFF_ID = "1660781559-M7Y24VAn"
