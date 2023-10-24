@@ -36,6 +36,25 @@ const Home: NextPage<{ liff: typeof liff | null; liffError: string | null }> = (
   const handleGetTokenButtonClick = async () => {
     try {
       if (liff?.initPlugins) {
+        const text = inputText;
+        if (text) {
+          liff.sendMessages([{type:"text",text:text}]);
+        } else {
+          setInputText("text is null");
+        }
+      } else {
+        // LIFF が未初期化の場合
+        setInputText("LIFF is not initialized");
+      }
+    } catch (error) {
+      // API 呼び出し中にエラーが発生した場合
+      setInputText("Error occurred: " + error);
+    }
+  };
+
+  const handleSendMessageButtonClick = async () => {
+    try {
+      if (liff?.initPlugins) {
         const token = await liff.getIDToken();
         if (token) {
           setInputText(token);
@@ -75,6 +94,7 @@ const Home: NextPage<{ liff: typeof liff | null; liffError: string | null }> = (
         <input id="input" type="text" value={inputText}></input>
         <button onClick={handleGetProfileButtonClick}>GetProfile</button>
         <button onClick={handleGetTokenButtonClick}>GetToken</button>
+        <button onClick={handleSendMessageButtonClick}>SendMessage</button>
       </main>
     </div>
   );
