@@ -36,6 +36,25 @@ const Home: NextPage<{ liff: typeof liff | null; liffError: string | null }> = (
   const handleGetTokenButtonClick = async () => {
     try {
       if (liff?.initPlugins) {
+        const token = await liff.getIDToken();
+        if (token) {
+          setInputText(token);
+        } else {
+          setInputText("Token is null");
+        }
+      } else {
+        // LIFF が未初期化の場合
+        setInputText("LIFF is not initialized");
+      }
+    } catch (error) {
+      // API 呼び出し中にエラーが発生した場合
+      setInputText("Error occurred: " + error);
+    }
+  };
+
+  const handleSendMessageButtonClick = async () => {
+    try {
+      if (liff?.initPlugins) {
         const text = inputText;
         if (text) {
           liff.sendMessages([{type:"text",text:text}]);
@@ -52,24 +71,6 @@ const Home: NextPage<{ liff: typeof liff | null; liffError: string | null }> = (
     }
   };
 
-  const handleSendMessageButtonClick = async () => {
-    try {
-      if (liff?.initPlugins) {
-        const token = await liff.getIDToken();
-        if (token) {
-          setInputText(token);
-        } else {
-          setInputText("Token is null");
-        }
-      } else {
-        // LIFF が未初期化の場合
-        setInputText("LIFF is not initialized");
-      }
-    } catch (error) {
-      // API 呼び出し中にエラーが発生した場合
-      setInputText("Error occurred: " + error);
-    }
-  };
 
   return (
     <div>
