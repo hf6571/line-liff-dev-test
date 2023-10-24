@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import type { liff } from "@line/liff";
 import type { NextPage } from "next";
 import Head from "next/head";
@@ -7,6 +8,50 @@ const Home: NextPage<{ liff: typeof liff | null; liffError: string | null }> = (
   liff,
   liffError
 }) => {
+  const [inputText, setInputText] = useState("init string");
+
+  useEffect(() => {
+    // 初期化が完了したら
+    if (liff?.initPlugins) {
+      handleGetProfileButtonClick();
+    }
+  }, [liff]);
+
+  const handleGetProfileButtonClick = async () => {
+    try {
+      if (liff?.initPlugins) {
+        const profile = await liff.getProfile();
+        const userId = profile.userId;
+        setInputText(userId);
+      } else {
+        // LIFF が未初期化の場合
+        setInputText("LIFF is not initialized");
+      }
+    } catch (error) {
+      // API 呼び出し中にエラーが発生した場合
+      setInputText("Error occurred: " + error);
+    }
+  };
+
+  const handleGetTokenButtonClick = async () => {
+    try {
+      if (liff?.initPlugins) {
+        const token = await liff.getIDToken();
+        if (token) {
+          setInputText(token);
+        } else {
+          setInputText("Token is null");
+        }
+      } else {
+        // LIFF が未初期化の場合
+        setInputText("LIFF is not initialized");
+      }
+    } catch (error) {
+      // API 呼び出し中にエラーが発生した場合
+      setInputText("Error occurred: " + error);
+    }
+  };
+
   return (
     <div>
       <Head>
@@ -26,13 +71,10 @@ const Home: NextPage<{ liff: typeof liff | null; liffError: string | null }> = (
             </p>
           </>
         )}
-        <a
-          href="https://developers.line.biz/ja/docs/liff/"
-          target="_blank"
-          rel="noreferrer"
-        >
-          LIFF Documentation
-        </a>
+        <label>入力欄：</label>
+        <input id="input" type="text" value={inputText}></input>
+        <button onClick={handleGetProfileButtonClick}>GetProfile</button>
+        <button onClick={handleGetTokenButtonClick}>GetToken</button>
       </main>
     </div>
   );
